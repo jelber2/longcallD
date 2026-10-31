@@ -8,6 +8,12 @@
 [![Published in bioRxiv](https://img.shields.io/badge/Published%20in-bioRxiv-red.svg)](https://www.biorxiv.org/content/10.64898/2026.03.20.713111v1)
 <!-- [![GitHub Issues](https://img.shields.io/github/issues/yangao07/longcallD.svg?label=Issues)](https://github.com/yangao07/longcallD/issues) -->
 
+## Fork note
+
+In this fork, [abPOA](https://github.com/yangao07/abPOA) has been replaced by
+[Psy-Fer/poa-consensus](https://github.com/Psy-Fer/poa-consensus) for haplotype
+consensus and MSA-based read refinement (`--refine-aln`).
+
 ## Updates (release v0.0.11)
 
 * Bugs fixes:
@@ -37,6 +43,7 @@ man ./longcallD.1
 ``` -->
 
 ## Table of Contents
+- [Fork note](#fork-note)
 - [Updates (release v0.0.11)](#updates-release-v0011)
 - [Getting Started](#getting-started)
 - [Table of Contents](#table-of-contents)

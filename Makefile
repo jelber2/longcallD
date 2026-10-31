@@ -31,16 +31,16 @@ EDLIB_DIR     = ./edlib
 EDLIB_INC_DIR = ./edlib/include
 EDLIB         = $(EDLIB_DIR)/src/edlib.o
 
-ABPOA_DIR   = ./abPOA
-ABPOA_LIB   = ./abPOA/lib/libabpoa.a
-ABPOA_INC_DIR = $(ABPOA_DIR)/include
+POA_DIR     = ./poa-consensus
+POA_LIB     = $(POA_DIR)/target/release/libpoa_consensus.a
+POA_SRC     = $(wildcard $(POA_DIR)/src/*.rs) $(POA_DIR)/Cargo.toml $(POA_DIR)/Cargo.lock
 
 WFA2_DIR    = ./WFA2-lib
 WFA2_LIB    = $(WFA2_DIR)/lib/libwfa.a
 
 LIB_PATH    =
-LIB         = $(HTSLIB) $(ABPOA_LIB) $(WFA2_LIB) $(LIB_PATH) -lm -lz -lpthread -llzma -lbz2 -lcurl
-INCLUDE     = -I $(HTSLIB_DIR) -I $(EDLIB_INC_DIR) -I $(ABPOA_INC_DIR) -I $(WFA2_DIR)
+LIB         = $(HTSLIB) $(POA_LIB) $(WFA2_LIB) $(LIB_PATH) -lm -lz -lpthread -llzma -lbz2 -lcurl
+INCLUDE     = -I $(HTSLIB_DIR) -I $(EDLIB_INC_DIR) -I $(WFA2_DIR)
 
 # Try linking against libdeflate
 ifeq ($(shell echo "int main() {return 0;}" | ${CC} -x c - $(LIB_PATH) -ldeflate >/dev/null 2>&1 && echo "yes"),yes)
@@ -48,14 +48,14 @@ ifeq ($(shell echo "int main() {return 0;}" | ${CC} -x c - $(LIB_PATH) -ldeflate
 endif
 
 ifeq ($(UNAME_S),Linux) # Linux
-	LIB += -lcrypto
+	LIB += -lcrypto -ldl
 	ifneq ($(portable),)
 		LIB += -static-libgcc -static-libstdc++
 		ifneq ($(opt_lib),)
-			LIB = $(HTSLIB) $(ABPOA_LIB) $(WFA2_LIB) -static-libgcc -static-libstdc++ -L${opt_lib} -lm -lz -lpthread -llzma -lbz2 -lcurl -lssl -lcrypto -lssh2 -ldl -Wl,-Bstatic -ldeflate -Wl,-Bdynamic -lzstd
+			LIB = $(HTSLIB) $(POA_LIB) $(WFA2_LIB) -static-libgcc -static-libstdc++ -L${opt_lib} -lm -lz -lpthread -llzma -lbz2 -lcurl -lssl -lcrypto -lssh2 -ldl -Wl,-Bstatic -ldeflate -Wl,-Bdynamic -lzstd
 		else
 			ifneq ($(OPT_LIB),)
-				LIB = $(HTSLIB) $(ABPOA_LIB) $(WFA2_LIB) -static-libgcc -static-libstdc++ -L${OPT_LIB} -lm -lz -lpthread -llzma -lbz2 -lcurl -lssl -lcrypto -lssh2 -ldl -Wl,-Bstatic -ldeflate -Wl,-Bdynamic -lzstd
+				LIB = $(HTSLIB) $(POA_LIB) $(WFA2_LIB) -static-libgcc -static-libstdc++ -L${OPT_LIB} -lm -lz -lpthread -llzma -lbz2 -lcurl -lssl -lcrypto -lssh2 -ldl -Wl,-Bstatic -ldeflate -Wl,-Bdynamic -lzstd
 			endif
 		endif
 	endif
@@ -66,19 +66,15 @@ ifneq ($(debug),)
 	EXTRA_FLAGS  += -D __DEBUG__
 endif
 
-ABPOA_GDB_LIB = ./abPOA/lib/libabpoa_sse41.a
-ABPOA_NOR_LIB = ./abPOA/lib/libabpoa.a
 WFA_GDB_LIB   = ./WFA2-lib/lib/libwfa_gdb.a
 WFA_NOR_LIB   = ./WFA2-lib/lib/libwfa.a
 
 # for gdb
 ifneq ($(gdb),)
 	OPT_FLAGS = -O0 -g
-	ABPOA_LIB = $(ABPOA_GDB_LIB)
 	WFA2_LIB  = $(WFA_GDB_LIB)
 else
 	OPT_FLAGS = -O3
-	ABPOA_LIB = $(ABPOA_NOR_LIB)
 	WFA2_LIB  = $(WFA_NOR_LIB)
 endif
 
@@ -117,7 +113,7 @@ SRC_DIR = ./src
 
 HTS_ALL = hts_all
 EDLIB_ALL = edlib_all
-ABPOA_ALL = abpoa_all
+POA_ALL = poa_all
 WFA2_ALL = wfa2_all
 CSOURCE    = $(wildcard ${SRC_DIR}/*.c)
 CPPSOURCE  = $(wildcard $(SRC_DIR)/*.cpp)
@@ -132,7 +128,7 @@ endif
 .c.o:
 	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
-all: $(HTS_ALL) $(EDLIB) $(ABPOA_LIB) $(WFA2_LIB) $(BIN)
+all: $(HTS_ALL) $(EDLIB) $(POA_LIB) $(WFA2_LIB) $(BIN)
 
 $(HTS_ALL): $(HTSLIB)
 
@@ -143,25 +139,25 @@ $(EDLIB): $(EDLIB_DIR)/src/edlib.cpp $(EDLIB_DIR)/include/edlib.h
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -c $< $(INCLUDE) -o $@
 $(EDLIB_ALL): $(EDLIB)
 
-$(ABPOA_GDB_LIB): 
-	cd $(ABPOA_DIR); make libabpoa gdb=1 sse41=1
-$(ABPOA_NOR_LIB):
-	cd $(ABPOA_DIR); make libabpoa
+$(POA_LIB): $(POA_SRC)
+	cd $(POA_DIR); cargo build --release --lib
 
-$(ABPOA_ALL): $(ABPOA_LIB)
+$(POA_ALL): $(POA_LIB)
 
 $(WFA2_LIB):
 	cd $(WFA2_DIR); make setup lib_wfa CC_FLAGS="$(CC_FLAGS) -O3" 
 $(WFA2_ALL): $(WFA2_LIB)
 
 
-$(BIN): $(OBJS) $(ABPOA_LIB) $(HTSLIB) $(WFA2_LIB)
+$(BIN): $(OBJS) $(POA_LIB) $(HTSLIB) $(WFA2_LIB)
 	if [ ! -d $(BIN_DIR) ]; then mkdir $(BIN_DIR); fi
 	$(CXX) $(BIN_LDFLAGS) $(OBJS) -o $@ $(LIB) $(PG_FLAG)
 # 	$(CC) $(OBJS) -o $@ $(LIB) $(PG_FLAG)
 
-$(SRC_DIR)/align.o: $(SRC_DIR)/align.c $(SRC_DIR)/align.h $(SRC_DIR)/utils.h $(SRC_DIR)/bam_utils.h $(SRC_DIR)/seq.h
+$(SRC_DIR)/align.o: $(SRC_DIR)/align.c $(SRC_DIR)/align.h $(SRC_DIR)/poa_consensus.h $(SRC_DIR)/utils.h $(SRC_DIR)/bam_utils.h $(SRC_DIR)/seq.h
 	$(CC) -c -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES $(CFLAGS) $< $(INCLUDE) -o $@
+
+$(SRC_DIR)/poa_consensus.o: $(SRC_DIR)/poa_consensus.c $(SRC_DIR)/poa_consensus.h $(SRC_DIR)/call_var_main.h $(SRC_DIR)/align.h
 
 $(SRC_DIR)/assign_aln_hap.o: $(SRC_DIR)/assign_aln_hap.c $(SRC_DIR)/assign_aln_hap.h $(SRC_DIR)/utils.h $(SRC_DIR)/bam_utils.h
 $(SRC_DIR)/bam_utils.o: $(SRC_DIR)/bam_utils.c $(SRC_DIR)/bam_utils.h $(SRC_DIR)/utils.h
@@ -178,15 +174,15 @@ $(SRC_DIR)/sdust.o: $(SRC_DIR)/sdust.c $(SRC_DIR)/sdust.h $(SRC_DIR)/kdq.h $(SRC
 $(SRC_DIR)/utils.o: $(SRC_DIR)/utils.c $(SRC_DIR)/utils.h $(SRC_DIR)/ksort.h $(SRC_DIR)/kseq.h
 $(SRC_DIR)/vcf_utils.o: $(SRC_DIR)/vcf_utils.c $(SRC_DIR)/vcf_utils.h $(SRC_DIR)/utils.h
 
-.PHONY: all hts_all abpoa_all wfa2_all clean clean_all clean_hts clean_abpoa clean_wfa2
+.PHONY: all hts_all poa_all wfa2_all clean clean_all clean_hts clean_poa clean_wfa2
 
 clean:
 	rm -f $(SRC_DIR)/*.o $(BIN)
 clean_all:
-	rm -f $(SRC_DIR)/*.o $(BIN) $(HTSLIB) $(ABPOA_LIB) $(WFA2_LIB)
+	rm -f $(SRC_DIR)/*.o $(BIN) $(HTSLIB) $(POA_LIB) $(WFA2_LIB)
 clean_hts:
 	rm -f $(HTSLIB)
-clean_abpoa:
-	rm -f $(ABPOA_LIB) $(ABPOA_DIR)/src/*.o
+clean_poa:
+	cd $(POA_DIR); cargo clean
 clean_wfa2:
 	rm -f $(WFA2_LIB)

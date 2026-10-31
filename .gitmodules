@@ -3,12 +3,12 @@
 	url = https://github.com/samtools/htslib.git
 	ignore = dirty
 
-[submodule "abPOA"]
-	path = abPOA
-	url = https://github.com/yangao07/abPOA.git
-	ignore = dirty
 
 [submodule "WFA2-lib"]
 	path = WFA2-lib
 	url = https://github.com/smarco/WFA2-lib.git
+	ignore = dirty
+[submodule "poa-consensus"]
+	path = poa-consensus
+	url = git@github.com:jelber2/poa-consensus.git
 	ignore = dirty

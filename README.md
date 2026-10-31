@@ -105,7 +105,7 @@ conda install -c bioconda longcalld
 ```
 
 ### Build from source
-To compile longcallD from source, ensure you have **GCC/clang(9.0+)** and **zlib/libbz2/liblzma/libcurl** (for htslib) installed. 
+To compile longcallD from source, ensure you have **GCC/clang(9.0+)**, **Rust 1.85+ (cargo)**, and **zlib/libbz2/liblzma/libcurl** (for htslib) installed. 
 ```
 wget https://github.com/yangao07/longcallD/releases/download/v0.0.11/longcallD-v0.0.11.tar.gz
 tar -zxvf longcallD-v0.0.11.tar.gz
@@ -119,6 +119,7 @@ git clone --recursive https://github.com/yangao07/longcallD.git
 cd longcallD
 make
 ```
+The build also compiles the bundled `poa-consensus` Rust crate with `cargo` (Rust 1.85+).
 
 ## Usage
 LongcallD requires a **reference genome (FASTA)** and a **long-read BAM/CRAM** file as inputs. It outputs **phased variant calls in VCF format**.
@@ -194,7 +195,7 @@ If you encounter memory constraints, you may restrict processing to specific gen
 LongcallD is dependent on the following libraries, we are grateful to all the developers/maintainers:
 
 * [htslib](https://github.com/samtools/htslib): read/write BAM/CRAM/VCF
-* [abPOA](https://github.com/yangao07/abPOA): consensus calling
+* [poa-consensus](https://github.com/Psy-Fer/poa-consensus): haplotype consensus and partial order alignment
 * [WFA](https://github.com/smarco/WFA2-lib): pairwise alignment
 * [edlib](https://github.com/Martinsos/edlib): fast sequence similarity calculation
 * [cgranges](https://github.com/lh3/cgranges): interval operations

@@ -59,6 +59,9 @@ int wfa_end2end_aln(uint8_t *pattern, int plen, uint8_t *text, int tlen,
                     uint32_t **cigar_buf, int *cigar_length, uint8_t **pattern_alg, uint8_t **text_alg, int *alg_length);
 int wfa_heuristic_aln(uint8_t *pattern, int plen, uint8_t *text, int tlen, int a, int b, int q, int e, int q2, int e2, int *n_eq, int *n_xid);
 
+int collect_partial_aln_beg_end(const call_var_opt_t *opt, int sampling_reads,
+                                uint8_t *target, int tlen, int target_full_cover, uint8_t *query, int qlen, int query_full_cover,
+                                int *target_beg, int *target_end, int *query_beg, int *query_end);
 int collect_noisy_reg_aln_strs(const call_var_opt_t *opt, bam_chunk_t *chunk, hts_pos_t noisy_reg_beg, hts_pos_t noisy_reg_end, 
                                int noisy_reg_i, int n_noisy_reg_reads, int *noisy_reads, uint8_t *ref_seq, int ref_seq_len,
                                int *clu_n_seqs, int **clu_read_ids, aln_str_t **aln_strs);

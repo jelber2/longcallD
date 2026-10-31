@@ -155,7 +155,7 @@ typedef struct call_var_opt_t {
     int min_hap_full_reads, min_hap_reads; //, min_no_hap_full_reads;
     // alignment
     int match, mismatch, gap_open1, gap_ext1, gap_open2, gap_ext2;
-    int gap_aln; // default: 1: left (minimap2, abpoa), 2: right (wfa2)
+    int gap_aln; // default: 1: left (minimap2), 2: right (wfa2)
     double min_read_to_hap_cons_sim, partial_aln_ratio;
     int min_noisy_reg_size_to_sample_reads; //, sampling_hap_read_count, sampling_non_hap_read_count;
     // int disable_read_sampling; // disable read-sampling in long noisy regions; by default read sampling is enabled; disable to capture mosaic variants in long noisy regions
@@ -194,7 +194,7 @@ typedef struct call_var_io_aux_t {
 typedef struct call_var_pl_t {
     // input files
     call_var_io_aux_t *io_aux;
-    // TODO mv aligner_obj (WFA/abPOA) here
+    // TODO mv aligner_obj (WFA/poa-consensus) here
     // parameters, output files
     struct call_var_opt_t *opt;
     // m-threads

@@ -2221,7 +2221,7 @@ void update_cand_var_profile_from_cons_aln_str21(int clu_idx, aln_str_t *cons_al
     }
 }
 
-// msa_seqs: clu_n_seqs + cons + cons from the other haplotype
+// aln_strs: reads + cons + cons from the other haplotype
 int update_cand_var_profile_from_cons_aln_str2(const call_var_opt_t *opt, bam_chunk_t *chunk, int *clu_n_seqs, int **clu_read_ids, aln_str_t **aln_strs, 
                                           hts_pos_t noisy_reg_beg, cand_var_t *hap1_vars, int *hap1_var_cate, int n_hap1_vars, cand_var_t *hap2_vars, int *hap2_var_cate, int n_hap2_vars, 
                                           cand_var_t **noisy_vars, int **noisy_var_cate, read_var_profile_t **p) {
@@ -2275,7 +2275,7 @@ int update_cand_var_profile_from_cons_aln_str2(const call_var_opt_t *opt, bam_ch
     return n_vars;
 }
 // XXX allow partial-aligned reads
-// msa_seqs: ref + cons + clu_n_seqs
+// aln_strs: ref + cons + cluster reads
 int make_vars_from_msa_cons_aln(const call_var_opt_t *opt, bam_chunk_t *chunk, int n_reads, int *read_ids, hts_pos_t noisy_reg_beg,
                                 int n_cons, int *clu_n_seqs, int **clu_read_ids, aln_str_t **aln_strs,
                                 cand_var_t **noisy_vars, int **noisy_var_cate, read_var_profile_t **p) {
@@ -2677,7 +2677,7 @@ int collect_noisy_vars1(bam_chunk_t *chunk, const call_var_opt_t *opt, int noisy
             aln_strs[i][j].target_aln = NULL; aln_strs[i][j].query_aln = NULL; aln_strs[i][j].aln_len = 0;
         }
     }
-    n_cons = collect_noisy_reg_aln_strs(opt, chunk, noisy_reg_beg, noisy_reg_end, noisy_reg_i, n_noisy_reads, noisy_reads, ref_seq, ref_seq_len, // both cons_seqs and msa_seqs are separated for n_cons==2
+    n_cons = collect_noisy_reg_aln_strs(opt, chunk, noisy_reg_beg, noisy_reg_end, noisy_reg_i, n_noisy_reads, noisy_reads, ref_seq, ref_seq_len, // consensus sequences and read clusters are separated for n_cons==2
                                         clu_n_seqs, clu_read_ids, aln_strs);
     if (LONGCALLD_VERBOSE >= 2) fprintf(stderr, "n_cons: %d\n", n_cons);
     free(ref_seq);

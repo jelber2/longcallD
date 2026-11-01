@@ -14,6 +14,12 @@ In this fork, [abPOA](https://github.com/yangao07/abPOA) has been replaced by
 [Psy-Fer/poa-consensus](https://github.com/Psy-Fer/poa-consensus) for haplotype
 consensus and MSA-based read refinement (`--refine-aln`).
 
+You have to install from source, and you might have to use:
+
+```bash
+git -c url."https://github.com/".insteadOf=git@github.com: clone --recursive https://github.com/jelber2/longcallD
+```
+
 ## Updates (release v0.0.11)
 
 * Bugs fixes:
